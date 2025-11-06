@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .name-input-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .name-input-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .name-input-section input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .name-input-section input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .question-image {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: block;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .feedback {
+            font-size: 18px;
+            margin: 15px 0;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .button-container {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast">Results copied to clipboard!</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 id="quizTitle">Quiz</h1>
+            <p id="quizSubtitle">Test your knowledge</p>
+        </div>
+
+        <div class="content">
+            <div class="name-input-section">
+                <label for="studentName">Enter Your Initials:</label>
+                <input type="text" id="studentName" placeholder="Your initials" autocomplete="name">
+            </div>
+
+            <div id="quizForm"></div>
+
+            <div class="button-container">
+                <button type="button" class="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
+                <button type="button" class="reset-btn" onclick="resetQuiz()">Reset</button>
+                <button type="button" class="copy-btn" id="copyBtn" onclick="copyResults()" disabled>Copy Results</button>
+            </div>
+
+            <div class="results" id="results">
+                <h2>Quiz Results</h2>
+                <div class="score" id="scoreDisplay"></div>
+                <div class="feedback" id="feedback"></div>
+                <div class="explanation" id="explanation"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // PASTE YOUR MCQs HERE
+        // ============================================
+        // Format: Copy and paste your questions below between the backticks
+        // Mark correct answers with **bold** or UPPERCASE or ***triple asterisks***
+        // 
+        // TO ADD AN IMAGE: Add [IMAGE: filename.jpg] on the line before the question
+        // Put your image files in the SAME FOLDER as this HTML file
+        //
+        // Example formats that work:
+        // "1. What is the capital of France?\nA) London\nB) **Paris**\nC) Berlin\nD) Madrid"
+        // 
+        // "[IMAGE: photo1.jpg]\n1. What do you see in this image?\nA) Cat\nB) **Dog**\nC) Bird\nD) Fish"
+        // "[IMAGE: diagram.png]\n5. According to this diagram, what is correct?\nA) X\nB) **Y**\nC) Z"
+        
+        const mcqText = `
+GRADE 11 MATH LITERACY - 20 MCQs
+
+[IMAGE: 1.png]
+1. What type of costs are Ms Jena’s rent and salaries?
+A) Variable costs
+B) **Fixed costs**
+C) Semi-variable costs
+D) Indirect costs
+E) None of the above
+
+2. What are Ms Jena’s weekly fixed costs?
+A) R250
+B) R400
+C) **R650**
+D) R825
+E) None of the above
+
+3. On average, each customer is charged R75 per pair of shoes repaired. What does this amount represent?
+A) **Selling price per unit**
+B) Cost per pair
+C) Fixed expense
+D) Net profit
+E) None of the above
+
+4. The total expenses for Ms Jena’s business are represented by the formula:
+A) R75 × n
+B) **R650 + R25n**
+C) R400 + R250n
+D) 75n + 25
+E) All of the above
+
+[IMAGE: 2.png]
+5. If Ms Jena repaired 10 pairs of shoes, what would her total income be?
+A) R250
+B) **R750**
+C) R650
+D) R1000
+E) None of the above
+
+6. When Ms Jena repaired 20 pairs of shoes, what was her total expense?
+A) R650
+B) R1 025
+C) **R1 150**
+D) R1 500
+E) None of the above
+
+7. In which week did Ms Jena repair 20 pairs of shoes?
+A) Week 1
+B) Week 2
+C) **Week 3**
+D) Week 4
+E) None of the above
+
+8. If Ms Jena earned R1 500 in total income for 20 pairs, what was her profit that week?
+A) R350
+B) R250
+C) **R350**
+D) R125
+E) None of the above
+
+9. Which formula represents Ms Jena’s income for repairing n pairs of shoes?
+A) **Income = 75n**
+B) Income = 650 + 25n
+C) Income = R650 + R75n
+D) Income = 25n
+E) None of the above
+
+[IMAGE: 3.png]
+10. At what number of pairs of shoes does Ms Jena reach her break-even point?
+A) 5 pairs
+B) 8 pairs
+C) **13 pairs**
+D) 20 pairs
+E) None of the above
+
+Grade 12 Business Studies – Bank Transactions and Charges (5 MCQs)
+
+[IMAGE: 4.png]
+1. What is the bank charge for a cash withdrawal from Mrs Molefe’s own bank’s ATM?
+A) 1,25% of the amount withdrawn
+B) 2,25% of the amount withdrawn
+C) **1,15% of the amount withdrawn**
+D) R6,00 per transaction
+E) None of the above
+
+2. What is the charge for a cash withdrawal from another bank’s ATM?
+A) 1,15% of amount withdrawn
+B) R6,00 flat rate
+C) **R9,50 plus own bank’s transaction cost**
+D) 2,25% of amount withdrawn
+E) All of the above
+
+3. Mrs Molefe’s opening balance was R42 952,19. On the first day, debit orders of R2 100 and R8 800 were deducted. What was her balance at the end of day 1?
+A) R34 152,19  
+B) **R32 052,19**  
+C) R33 752,19  
+D) R30 000,00  
+E) None of the above  
+
+4. On the 2nd of the month, Mrs Molefe withdrew R1 150 from her own bank’s ATM. What was the bank charge for this withdrawal?  
+A) **R13,23**  
+B) R9,50  
+C) R25,00  
+D) R11,50  
+E) None of the above  
+
+[IMAGE: a.png]
+5. If Mrs Molefe deposited R2 000 at her own bank’s ATM, what would her bank charge be?  
+A) **R45,00**  
+B) R9,50  
+C) R6,00  
+D) R22,50  
+E) None of the above  
+
+Grade 11 Mathematical Literacy – Finance and Data Handling (15 MCQs)
+
+1. Simple interest is calculated using which formula?
+A) **I = P × r × t**
+B) I = P + r + t
+C) I = P ÷ r × t
+D) I = r × t ÷ P
+E) None of the above
+
+2. If R5 000 is invested at 8% simple interest per year for 2 years, how much interest will be earned?
+A) R400  
+B) **R800**  
+C) R850  
+D) R900  
+E) None of the above  
+
+3. What is the total amount after 3 years if R10 000 is invested at 10% simple interest per annum?
+A) R12 000  
+B) **R13 000**  
+C) R10 300  
+D) R11 000  
+E) None of the above  
+
+4. Compound interest differs from simple interest because:
+A) It decreases each year  
+B) **Interest is calculated on the accumulated total (principal + interest)**  
+C) It only applies to savings accounts  
+D) It uses a smaller rate  
+E) All of the above  
+
+5. A fridge costs R6 000 excluding VAT. If VAT is charged at 15%, what is the total price including VAT?
+A) R6 750  
+B) R7 000  
+C) **R6 900**  
+D) R7 200  
+E) None of the above  
+
+6. A shirt costs R230 including VAT. What is the price before VAT?
+A) R190  
+B) **R200**  
+C) R205  
+D) R210  
+E) None of the above  
+
+7. If 1 US dollar = R18,50, how much will R1 850 be in dollars?
+A) **$100**  
+B) $95  
+C) $110  
+D) $85  
+E) None of the above  
+
+8. You exchange $200 into rand when 1 USD = R19,25. How much will you receive in rand?
+A) **R3 850**  
+B) R3 700  
+C) R4 000  
+D) R3 500  
+E) None of the above  
+
+9. A shop bought shoes for R450 and sold them for R600. What is the percentage profit?
+A) 20%  
+B) 25%  
+C) **33,3%**  
+D) 40%  
+E) None of the above  
+
+10. A cell phone was sold for R2 000, which included a 25% markup on cost price. What was the cost price?
+A) R1 750  
+B) **R1 600**  
+C) R1 500  
+D) R1 400  
+E) None of the above  
+
+11. A bag was bought for R250 and sold for R230. What was the percentage loss?
+A) 5%  
+B) **8%**  
+C) 10%  
+D) 12%  
+E) None of the above  
+
+12. The probability of rolling a 4 on a fair six-sided die is:
+A) **1/6**  
+B) 2/6  
+C) 3/6  
+D) 4/6  
+E) None of the above  
+
+13. In a class of 20 learners, 8 are left-handed. What is the probability of randomly selecting a left-handed learner?
+A) **0.4**  
+B) 0.2  
+C) 0.6  
+D) 0.5  
+E) None of the above  
+
+14. The mean of the following marks: 4, 6, 8, 10, 12 is:
+A) 7  
+B) **8**  
+C) 9  
+D) 10  
+E) None of the above  
+
+15. The median of these numbers: 12, 18, 20, 25, 30, 35, 40 is:
+A) **25**  
+B) 20  
+C) 30  
+D) 28  
+E) None of the above
+
+Grade 11 Mathematical Literacy – Water Tariffs and Municipal Accounts (5 MCQs)
+
+[IMAGE: 5.png]
+1. How many kilolitres of water did Mr Matu use under code WA0101?
+A) 4,073 kℓ  
+B) 2,817 kℓ  
+C) **6,110 kℓ**  
+D) 8,927 kℓ  
+E) None of the above  
+
+2. What is the tariff rate per kilolitre for WA0103?
+A) R16,99  
+B) R17,32  
+C) **R24,06**  
+D) R21,50  
+E) None of the above  
+
+3. Which code represents the **highest tariff rate per kilolitre**?
+A) WA0101  
+B) WA0102  
+C) **WA0103**  
+D) WA0104  
+E) All of the above  
+
+4. The total cost for code WA0101 (excluding VAT) can be calculated as:
+A) 6,110 × 17,32613  
+B) **6,110 × 16,9929**  
+C) 4,073 × 24,0637  
+D) 2,817 × 16,9929  
+E) None of the above  
+[IMAGE: a.png]
+5. Which statement about the tariffs is TRUE?
+A) WA0101 has the lowest cost per kilolitre  
+B) WA0103 has the fewest kilolitres used  
+C) **Both A and B are correct**  
+D) WA0102 is the most expensive tariff  
+E) None of the above  
+
+
+
+        `;
+        
+        // ============================================
+        // END OF MCQs - DON'T EDIT BELOW THIS LINE
+        // ============================================
+
+        let quizResults = null;
+        let quizData = [];
+
+        function parseMCQText(text) {
+            const questions = [];
+            const lines = text.trim().split('\n').filter(line => line.trim());
+            
+            let currentQuestion = null;
+            let currentOptions = [];
+            let correctIndex = -1;
+            let optionCount = 0;
+            let titleLine = '';
+            let currentImage = null;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Check if it's a title (first non-empty line or lines without question numbers)
+                if (i === 0 && !line.match(/^\d+\./)) {
+                    titleLine = line;
+                    continue;
+                }
+                
+                // Check for image tag [IMAGE: url]
+                const imageMatch = line.match(/^\[IMAGE:\s*(.+)\]$/i);
+                if (imageMatch) {
+                    currentImage = imageMatch[1].trim();
+                    continue;
+                }
+                
+                // Check if line starts with a number (new question)
+                const questionMatch = line.match(/^(\d+)\.\s*(.+)/);
+                if (questionMatch) {
+                    // Save previous question if exists
+                    if (currentQuestion && currentOptions.length > 0) {
+                        questions.push({
+                            question: currentQuestion,
+                            options: currentOptions,
+                            correct: correctIndex,
+                            image: null
+                        });
+                    }
+                    
+                    // Start new question
+                    currentQuestion = questionMatch[2];
+                    currentOptions = [];
+                    correctIndex = -1;
+                    optionCount = 0;
+                    
+                    // Store the pending image for this question
+                    if (currentImage) {
+                        // We'll add it after we have all options
+                    }
+                    continue;
+                }
+                
+                // Check if line is an option (A), B), a), b), etc.)
+                const optionMatch = line.match(/^([A-Za-z])\)\s*(.+)/);
+                if (optionMatch && currentQuestion) {
+                    let optionText = optionMatch[2];
+                    
+                    // Check if this option is marked as correct
+                    // Support **bold**, ***triple***, UPPERCASE, or [CORRECT] markers
+                    const isBold = optionText.includes('**') || optionText.includes('***');
+                    const isUppercase = optionText === optionText.toUpperCase() && 
+                                       optionText !== optionText.toLowerCase() &&
+                                       !optionText.includes('**');
+                    const hasCorrectMarker = optionText.toUpperCase().includes('[CORRECT]') || 
+                                            optionText.toUpperCase().includes('(CORRECT)');
+                    
+                    if (isBold || hasCorrectMarker) {
+                        correctIndex = optionCount;
+                        // Remove markdown and markers
+                        optionText = optionText.replace(/\*\*/g, '').replace(/\*\*\*/g, '')
+                                              .replace(/\[CORRECT\]/gi, '').replace(/\(CORRECT\)/gi, '').trim();
+                    } else if (isUppercase && optionText.length > 3) {
+                        // Only treat as correct if it's clearly uppercase (longer than 3 chars)
+                        correctIndex = optionCount;
+                    }
+                    
+                    currentOptions.push(optionText);
+                    optionCount++;
+                }
+            }
+            
+            // Don't forget the last question
+            if (currentQuestion && currentOptions.length > 0) {
+                questions.push({
+                    question: currentQuestion,
+                    options: currentOptions,
+                    correct: correctIndex,
+                    image: currentImage
+                });
+            }
+            
+            // Now go back and assign images to questions
+            let pendingImage = null;
+            const finalQuestions = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                const imageMatch = line.match(/^\[IMAGE:\s*(.+)\]$/i);
+                
+                if (imageMatch) {
+                    pendingImage = imageMatch[1].trim();
+                } else if (line.match(/^\d+\.\s*(.+)/)) {
+                    // Find this question in our array and assign the image
+                    const questionMatch = line.match(/^\d+\.\s*(.+)/);
+                    const qText = questionMatch[1];
+                    const foundQ = questions.find(q => q.question === qText);
+                    if (foundQ && pendingImage) {
+                        foundQ.image = pendingImage;
+                        pendingImage = null;
+                    }
+                }
+            }
+            
+            return { title: titleLine, questions: questions };
+        }
+
+        function generateQuiz() {
+            const parsed = parseMCQText(mcqText);
+            quizData = parsed.questions;
+            
+            // Update title if found
+            if (parsed.title) {
+                document.getElementById('quizTitle').textContent = parsed.title;
+                document.getElementById('quizSubtitle').textContent = `${quizData.length} Questions`;
+            }
+            
+            const quizForm = document.getElementById('quizForm');
+            let html = '';
+
+            quizData.forEach((q, index) => {
+                const qNum = index + 1;
+                const qId = `q${qNum}`;
+                
+                html += `
+                    <div class="question-container">
+                        <div class="question-number">Question ${qNum} of ${quizData.length}</div>`;
+                
+                // Add image if present
+                if (q.image) {
+                    html += `<img src="${q.image}" alt="Question ${qNum} image" class="question-image" onerror="this.style.display='none'">`;
+                }
+                
+                html += `
+                        <div class="question">${q.question}</div>
+                        <div class="options">`;
+                
+                q.options.forEach((option, optIndex) => {
+                    const optId = `${qId}_${optIndex}`;
+                    html += `
+                            <div class="option" onclick="selectOption(this, '${qId}', ${optIndex})">
+                                <input type="radio" name="${qId}" value="${optIndex}" id="${optId}">
+                                <label for="${optId}">${option}</label>
+                            </div>`;
+                });
+                
+                html += `
+                        </div>
+                    </div>`;
+            });
+
+            quizForm.innerHTML = html;
+        }
+
+        function selectOption(element, questionName, value) {
+            const radio = document.getElementById(`${questionName}_${value}`);
+            radio.checked = true;
+        }
+
+        function submitQuiz() {
+            const studentName = document.getElementById('studentName').value.trim();
+            
+            if (!studentName) {
+                alert('Please enter your initials before submitting.');
+                document.getElementById('studentName').focus();
+                return;
+            }
+
+            let score = 0;
+            let totalQuestions = quizData.length;
+            let detailedResults = [];
+
+            // Check answers
+            quizData.forEach((q, index) => {
+                const qNum = index + 1;
+                const qId = `q${qNum}`;
+                const selectedOption = document.querySelector(`input[name="${qId}"]:checked`);
+                const options = document.querySelectorAll(`input[name="${qId}"]`);
+                
+                if (selectedOption) {
+                    const selectedIndex = parseInt(selectedOption.value);
+                    const isCorrect = selectedIndex === q.correct;
+                    
+                    if (isCorrect) {
+                        score++;
+                        selectedOption.parentElement.classList.add('correct');
+                    } else {
+                        selectedOption.parentElement.classList.add('incorrect');
+                    }
+                    
+                    // Show correct answer
+                    options.forEach((opt, optIndex) => {
+                        if (optIndex === q.correct) {
+                            opt.parentElement.classList.add('correct');
+                        }
+                    });
+
+                    detailedResults.push({
+                        question: q.question,
+                        selected: q.options[selectedIndex],
+                        correct: q.options[q.correct],
+                        isCorrect: isCorrect
+                    });
+                } else {
+                    // Show correct answer even if not answered
+                    options.forEach((opt, optIndex) => {
+                        if (optIndex === q.correct) {
+                            opt.parentElement.classList.add('correct');
+                        }
+                    });
+
+                    detailedResults.push({
+                        question: q.question,
+                        selected: "No answer provided",
+                        correct: q.options[q.correct],
+                        isCorrect: false
+                    });
+                }
+            });
+
+            // Calculate percentage
+            const percentage = Math.round((score / totalQuestions) * 100);
+
+            // Display results
+            const resultsDiv = document.getElementById('results');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const feedback = document.getElementById('feedback');
+            const explanation = document.getElementById('explanation');
+
+            scoreDisplay.textContent = `${score} / ${totalQuestions}`;
+            
+            let feedbackText = '';
+            if (percentage >= 90) {
+                feedbackText = '🎉 Outstanding! Excellent work!';
+            } else if (percentage >= 75) {
+                feedbackText = '👏 Great job! Strong understanding!';
+            } else if (percentage >= 60) {
+                feedbackText = '👍 Good effort! Keep studying!';
+            } else {
+                feedbackText = '📚 Keep practicing! Review and try again.';
+            }
+            
+            feedback.textContent = feedbackText;
+            explanation.innerHTML = `<strong>Your Score: ${percentage}%</strong><br>You answered ${score} out of ${totalQuestions} questions correctly.`;
+
+            resultsDiv.classList.add('show');
+            
+            // Store results for copying
+            quizResults = {
+                name: studentName,
+                score: score,
+                total: totalQuestions,
+                percentage: percentage,
+                details: detailedResults
+            };
+
+            // Enable copy button
+            document.getElementById('copyBtn').disabled = false;
+
+            // Disable form inputs
+            const inputs = document.querySelectorAll('input[type="radio"]');
+            inputs.forEach(input => input.disabled = true);
+            document.getElementById('studentName').disabled = true;
+
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function resetQuiz() {
+            // Clear all radio selections
+            const inputs = document.querySelectorAll('input[type="radio"]');
+            inputs.forEach(input => {
+                input.checked = false;
+                input.disabled = false;
+            });
+            
+            // Remove all styling
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+
+            // Hide results
+            document.getElementById('results').classList.remove('show');
+
+            // Enable name input
+            document.getElementById('studentName').disabled = false;
+
+            // Disable copy button
+            document.getElementById('copyBtn').disabled = true;
+            quizResults = null;
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function copyResults() {
+            if (!quizResults) return;
+
+            const quizTitle = document.getElementById('quizTitle').textContent;
+            
+            let resultText = `📝 ${quizTitle.toUpperCase()} - RESULTS\n`;
+            resultText += `================================\n\n`;
+            resultText += `Student Name: ${quizResults.name}\n`;
+            resultText += `Score: ${quizResults.score}/${quizResults.total} (${quizResults.percentage}%)\n`;
+            resultText += `Date: ${new Date().toLocaleString()}\n\n`;
+            resultText += `DETAILED ANSWERS:\n`;
+            resultText += `================================\n\n`;
+
+            quizResults.details.forEach((result, index) => {
+                resultText += `Question ${index + 1}: ${result.question}\n`;
+                resultText += `Your answer: ${result.selected}\n`;
+                resultText += `Correct answer: ${result.correct}\n`;
+                resultText += `Status: ${result.isCorrect ? '✓ Correct' : '✗ Incorrect'}\n\n`;
+            });
+
+            resultText += `================================\n`;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(resultText).then(() => {
+                // Show toast notification
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }).catch(err => {
+                alert('Failed to copy results. Please try again.');
+                console.error('Copy failed:', err);
+            });
+        }
+
+        // Initialize quiz on page load
+        generateQuiz();
+    </script>
+</body>
+</html>
